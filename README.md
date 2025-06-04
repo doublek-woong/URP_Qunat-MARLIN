@@ -27,7 +27,7 @@ We evaluate and compare:
 
 - GPU: RTX 3090  (CUDA 12.4 tested)
 - Python: 3.10+
-- PyTorch: 2.7.0 + cu126
+- PyTorch: 2.6.0 + cu126
 - Install dependencies:
 
 ```bash
