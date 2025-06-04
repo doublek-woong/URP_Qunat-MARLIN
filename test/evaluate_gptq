@@ -11,14 +11,14 @@ from transformers import logging as hf_logging
 hf_logging.set_verbosity_error()
 
 # ────────────────────────── 설정값 ──────────────────────────
-MODEL_PATH   = "/home/eiclab/eiclab04/urp2025/gptq_inperson/llama3.1-8B-gptq-local"
+MODEL_PATH   = "/home/eiclab/eiclab04/urp2025/gptq_inperson/Llama-3.1-8B-GPTQ-pplopt"
 PROMPT       = "In a shocking finding, scientists discovered that "
-NEW_TOKENS   = 256               # 추론 속도 테스트용
+NEW_TOKENS   = 128             # 추론 속도 테스트용
 MAX_PPL_TOK  = 50_000            # PPL 평가에 사용할 최대 토큰 수
 SEQ_LEN      = 2048              # 슬라이딩 윈도우
 STRIDE       = 1024
-BACKEND_SEL  = BACKEND.MARLIN  # MARLIN 으로 바꾸면 마린 가속
-                                
+BACKEND_SEL  = BACKEND.TRITON  # MARLIN 으로 바꾸면 마린 가속
+BATCH_SIZE   = 1               #추론용 batch 크기
 # ────────────────────────────────────────────────────────────
 
 
@@ -73,11 +73,14 @@ def main():
     tok       = model.tokenizer
 
     # ── 추론 속도 측정 ────────────────────────────────────
-    ids = tok(PROMPT, return_tensors="pt").to("cuda")
+    single_ids = tok(PROMPT, return_tensors="pt")
+    ids = {k: v.repeat(BATCH_SIZE, 1).to("cuda") for k, v in single_ids.items()}
     torch.cuda.reset_peak_memory_stats()
+
     t0 = time.time()
     _  = model.generate(**ids, max_new_tokens=NEW_TOKENS)
-    tok_per_s = NEW_TOKENS / (time.time() - t0)
+    elapsed   = time.time() - t0
+    tok_per_s = NEW_TOKENS * BATCH_SIZE / elapsed
     peak_gpu  = torch.cuda.max_memory_allocated() / 2**20
 
     # ── PPL 계산 ─────────────────────────────────────────
@@ -89,7 +92,9 @@ def main():
     print(f"Load GPU memory   : {load_gpu:6.1f} MiB")
     print(f"Load CPU RSS      : {load_rss:6.1f} MiB")
     print(f"Peak GPU memory   : {peak_gpu:6.1f} MiB")
-    print(f"Inference speed   : {tok_per_s:6.1f} tokens/s  (+{NEW_TOKENS})")
+    print(f"Inference batch   :      {BATCH_SIZE}")
+    print(f"Inference speed   : {tok_per_s:6.1f} tokens/s "
+      f"({NEW_TOKENS} each)")
     print(f"Wikitext-2 PPL    : {ppl:6.2f}")
 
 if __name__ == "__main__":
