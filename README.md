@@ -13,11 +13,11 @@ We evaluate and compare:
 | Method          | Quantization | Acceleration (Kernel) |
 |-----------------|--------------|------------------------|
 | `Base`          | FP16         | None                  |
-| `GPTQ`          | INT4         | Torch                 |
-| `AWQ`           | INT4         | Torch                 |
-| `GPTQ+Marlin`   | INT4         | Marlin (Triton)       |
-| `AWQ+Marlin`    | INT4         | Marlin (Triton)       |
-| `QQQ`           | INT4         | Torch (custom)        |
+| `GPTQ`          | W4A16        | Torch                 |
+| `AWQ`           | W4A16        | Torch                 |
+| `GPTQ+Marlin`   | W4A16        | Marlin (Triton)       |
+| `AWQ+Marlin`    | W4A16        | Marlin (Triton)       |
+| `QQQ`           | W4A8         | Torch (custom)        |
 
 ---
 
@@ -25,7 +25,7 @@ We evaluate and compare:
 
 ### Requirements
 
-- GPU: RTX 3090 or A100 (CUDA 12.4 tested)
+- GPU: RTX 3090  (CUDA 12.4 tested)
 - Python: 3.10+
 - PyTorch: 2.7.0 + cu126
 - Install dependencies:
