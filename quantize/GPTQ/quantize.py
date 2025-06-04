@@ -2,7 +2,7 @@ from datasets import load_dataset
 from gptqmodel import GPTQModel, QuantizeConfig
 from gptqmodel.utils import BACKEND
 # 1. Define model and output paths
-model_id = #Your directory
+model_id = "./llama-3.1-8B"
 quant_model_dir = "Llama-3.1-8B-GPTQ"  # output directory for quantized model
 
 # 2. Prepare calibration dataset from WikiText2 (use training split)
