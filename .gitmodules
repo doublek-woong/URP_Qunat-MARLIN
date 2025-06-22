@@ -1,3 +1,6 @@
 [submodule "quantize/QQQ"]
 	path = quantize/QQQ
 	url = https://github.com/skku970412/QQQ.git
+[submodule "quantize/quantize/QQQ"]
+	path = quantize/quantize/QQQ
+	url = https://github.com/skku970412/QQQ.git
